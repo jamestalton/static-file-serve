@@ -1,0 +1,9 @@
+/.github/
+/certs/
+/coverage/
+/lib/
+/node_modules/
+/public/
+/.gitignore
+/Dockerfile
+/*.md

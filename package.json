@@ -1,0 +1,126 @@
+{
+    "name": "static-serve",
+    "version": "0.0.0",
+    "description": "Static file serve",
+    "author": "James Talton <talton@gmail.com>",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+ssh://git@github.com/jamestalton/static-serve.git"
+    },
+    "bin": {
+        "staticServe": "./lib/main.js"
+    },
+    "main": "lib/static-serve.js",
+    "types": "lib/static-serve.d.ts",
+    "files": [
+        "lib"
+    ],
+    "scripts": {
+        "start": "NODE_ENV=development PORT=3000 ts-node-dev --no-notify --no-deps --respawn --transpile-only src/main.ts",
+        "build": "rm -rf lib && tsc",
+        "test": "jest --verbose --color --ci",
+        "lint": "eslint src test --ext .ts --max-warnings=0",
+        "lint:fix": "eslint src test --ext .ts --fix",
+        "check": "prettier --check **/*.ts **/*.json !coverage/** !lib/** !**/package-lock.json",
+        "check:fix": "prettier --write **/*.ts **/*.json !coverage/** !lib/** !**/package-lock.json",
+        "update": "rm -rf package-lock.json node_modules && npx npm-check-updates -u && npm install && npm audit fix && npm test && npm run lint && npm run check",
+        "generate-certs": "mkdir -p certs && openssl req -subj '/C=US' -new -newkey rsa:2048 -sha256 -days 365 -nodes -x509 -keyout certs/tls.key -out certs/tls.crt"
+    },
+    "dependencies": {
+        "etag": "^1.8.1",
+        "mime-types": "^2.1.27",
+        "negotiator": "^0.6.2"
+    },
+    "devDependencies": {
+        "@types/etag": "^1.8.0",
+        "@types/jest": "^26.x.x",
+        "@types/mime-types": "^2.1.0",
+        "@types/negotiator": "^0.6.1",
+        "@types/node": "^12.x.x",
+        "@typescript-eslint/eslint-plugin": "^4.2.0",
+        "@typescript-eslint/parser": "^4.2.0",
+        "eslint": "^7.9.0",
+        "eslint-config-prettier": "^6.11.0",
+        "eslint-plugin-prettier": "^3.1.4",
+        "jest": "^26.x.x",
+        "prettier": "^2.1.2",
+        "ts-jest": "^26.x.x",
+        "ts-node": "^9.0.0",
+        "ts-node-dev": "^1.0.0-pre.63",
+        "typescript": "^4.0.3"
+    },
+    "prettier": {
+        "printWidth": 120,
+        "tabWidth": 4,
+        "semi": false,
+        "singleQuote": true
+    },
+    "eslintConfig": {
+        "parser": "@typescript-eslint/parser",
+        "parserOptions": {
+            "ecmaVersion": 2018,
+            "sourceType": "module",
+            "project": [
+                "./tsconfig.json",
+                "./test/tsconfig.json"
+            ]
+        },
+        "extends": [
+            "eslint:recommended",
+            "plugin:@typescript-eslint/eslint-recommended",
+            "plugin:@typescript-eslint/recommended",
+            "plugin:@typescript-eslint/recommended-requiring-type-checking",
+            "prettier/@typescript-eslint",
+            "plugin:prettier/recommended"
+        ],
+        "rules": {
+            "@typescript-eslint/no-use-before-define": "off",
+            "@typescript-eslint/no-unused-vars": "off",
+            "@typescript-eslint/no-floating-promises": [
+                "error",
+                {
+                    "ignoreVoid": true
+                }
+            ],
+            "no-console": "error",
+            "no-process-exit": "error"
+        }
+    },
+    "jest": {
+        "testEnvironment": "node",
+        "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+        "collectCoverage": true,
+        "coverageThreshold": {
+            "global": {
+                "branches": 0,
+                "functions": 0,
+                "lines": 0,
+                "statements": 0
+            }
+        },
+        "coverageReporters": [
+            "text",
+            "text-summary",
+            "html"
+        ],
+        "collectCoverageFrom": [
+            "src/**/*.ts",
+            "!**/node_modules/**",
+            "!<rootDir>/src/typings.d.ts"
+        ],
+        "moduleFileExtensions": [
+            "js",
+            "json",
+            "jsx",
+            "node",
+            "ts",
+            "tsx"
+        ],
+        "setupFiles": [
+            "<rootDir>/test/jest.ts"
+        ],
+        "preset": "ts-jest",
+        "testMatch": null
+    }
+}
