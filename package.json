@@ -16,10 +16,6 @@
     "files": [
         "lib"
     ],
-    "publishConfig": {
-        "access": "public",
-        "registry": "https://registry.npmjs.org/"
-    },
     "scripts": {
         "start": "NODE_ENV=development PORT=3000 ts-node-dev --no-notify --no-deps --respawn --transpile-only src/main.ts",
         "build": "rm -rf lib && tsc",
