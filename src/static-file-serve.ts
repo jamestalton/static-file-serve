@@ -177,9 +177,10 @@ function parseDirectory(directory: string, cache: IStaticCache, baseDirectory = 
                     )
                     .catch((err) => {
                         if (err instanceof Error) {
-                            logger.error(`static cache stat  err:${err.message}`)
+                            logger.error({ msg: 'static cache error', err: err.message })
                         } else {
-                            logger.error(`static cache stat`, err)
+                            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                            logger.error({ msg: 'static cache error', err })
                         }
                     })
 
@@ -190,9 +191,10 @@ function parseDirectory(directory: string, cache: IStaticCache, baseDirectory = 
         })
         .catch((err) => {
             if (err instanceof Error) {
-                logger.error(`static cache directory  err:${err.message}`)
+                logger.error({ msg: 'static cache error', err: err.message })
             } else {
-                logger.error(`static cache directory`, err)
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                logger.error({ msg: 'static cache error', err })
             }
             return cache
         })

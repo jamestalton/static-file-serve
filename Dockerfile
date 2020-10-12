@@ -15,4 +15,4 @@ ENV NODE_ENV production
 WORKDIR /app
 COPY --from=builder /app/node_modules /app/node_modules
 COPY --from=builder /app/lib /app/
-CMD ["node", "lib/main.js"]
+CMD ["node", "main.js"]

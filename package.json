@@ -1,18 +1,18 @@
 {
-    "name": "static-serve",
+    "name": "static-file-serve",
     "version": "0.0.0",
     "description": "Static file serve",
     "author": "James Talton <talton@gmail.com>",
     "license": "MIT",
     "repository": {
         "type": "git",
-        "url": "git+ssh://git@github.com/jamestalton/static-serve.git"
+        "url": "git+ssh://git@github.com/jamestalton/static-file-serve.git"
     },
     "bin": {
-        "staticServe": "./lib/main.js"
+        "static-file-serve": "./lib/main.js"
     },
-    "main": "lib/static-serve.js",
-    "types": "lib/static-serve.d.ts",
+    "main": "lib/static-file-serve.js",
+    "types": "lib/static-file-serve.d.ts",
     "files": [
         "lib"
     ],
@@ -25,7 +25,9 @@
         "check": "prettier --check **/*.ts **/*.json !coverage/** !lib/** !**/package-lock.json",
         "check:fix": "prettier --write **/*.ts **/*.json !coverage/** !lib/** !**/package-lock.json",
         "update": "rm -rf package-lock.json node_modules && npx npm-check-updates -u && npm install && npm audit fix && npm test && npm run lint && npm run check",
-        "generate-certs": "mkdir -p certs && openssl req -subj '/C=US' -new -newkey rsa:2048 -sha256 -days 365 -nodes -x509 -keyout certs/tls.key -out certs/tls.crt"
+        "generate-certs": "mkdir -p certs && openssl req -subj '/C=US' -new -newkey rsa:2048 -sha256 -days 365 -nodes -x509 -keyout certs/tls.key -out certs/tls.crt",
+        "docker:build": "docker build --pull --tag static-file-serve .",
+        "docker:run": "docker run --rm --name static-file-serve -p 3000:3000 -e PORT=3000 static-file-serve"
     },
     "dependencies": {
         "etag": "^1.8.1",

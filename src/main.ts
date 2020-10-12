@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-import { loadStaticCache, staticRequestHandler } from './static-serve'
+import { loadStaticCache, staticRequestHandler } from './static-file-serve'
 import { shutdown, start } from './server'
 
 const logger = console
