@@ -53,9 +53,6 @@ export function start(options: ServerOptions): void {
                         logger.debug({ msg: `server listening`, port: address.port })
                     }
                 })
-                .on('sessionError', (err: Error) => {
-                    logger.error({ msg: `session error`, error: err.message })
-                })
                 .on('error', (err: NodeJS.ErrnoException) => {
                     server.close()
                     if (err.code === 'EADDRINUSE') {
@@ -92,14 +89,6 @@ export function start(options: ServerOptions): void {
                     } else {
                         logger.error({ msg: `server error`, error: err.message })
                     }
-                })
-                .on('sessionError', (err: Error) => {
-                    logger.error({ msg: `session error`, error: err.message })
-                })
-                .on('connection', (socket: Socket) => {
-                    socket.on('error', (err) => {
-                        logger.error({ msg: `request socket error`, error: err.message })
-                    })
                 })
         }
     } catch (err) {

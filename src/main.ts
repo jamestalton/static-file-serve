@@ -1,3 +1,4 @@
+#!/usr/bin/env node # -*- TypeScript -*-
 /* istanbul ignore file */
 import { loadStaticCache, staticRequestHandler } from './static-file-serve'
 import { shutdown, start } from './server'
@@ -35,7 +36,7 @@ async function main() {
         directory: 'public',
     })
     start({
-        http2: true,
+        http2: false,
         requestHandler: staticRequestHandler,
     })
 }

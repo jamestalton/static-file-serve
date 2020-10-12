@@ -9,7 +9,7 @@
         "url": "git+ssh://git@github.com/jamestalton/static-file-serve.git"
     },
     "bin": {
-        "static-file-serve": "./lib/main.js"
+        "static-file-serve": "lib/main.js"
     },
     "main": "lib/static-file-serve.js",
     "types": "lib/static-file-serve.d.ts",
