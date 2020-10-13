@@ -52,9 +52,9 @@ jobs:
               if: env.SKIP != '1'
               run: npm ci
 
-            # - name: Test
-            #   if: env.SKIP != '1'
-            #   run: npm test
+            - name: Test
+              if: env.SKIP != '1'
+              run: npm test
 
             - name: Build
               if: env.SKIP != '1'

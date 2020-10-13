@@ -1,7 +1,7 @@
 #!/usr/bin/env node # -*- TypeScript -*-
 /* istanbul ignore file */
 import { loadStaticCache, staticRequestHandler } from './static-file-serve'
-import { shutdown, start } from './server'
+import { stopServer, startServer } from './server'
 
 const logger = console
 
@@ -12,15 +12,15 @@ process
     .on('SIGINT', (signal) => {
         process.stdout.write('\n')
         logger.debug({ msg: `process ${signal}` })
-        void shutdown()
+        void stopServer()
     })
     .on('SIGTERM', (signal) => {
         logger.debug({ msg: `process ${signal}` })
-        void shutdown()
+        void stopServer()
     })
     .on('uncaughtException', (err) => {
         logger.error({ msg: 'process uncaughtException', error: err.message, stack: err.stack })
-        void shutdown()
+        void stopServer()
     })
     .on('exit', function processExit(code) {
         if (code !== 0) {
@@ -35,7 +35,7 @@ async function main() {
         defaultHtml: '/index.html',
         directory: 'public',
     })
-    start({
+    await startServer({
         http2: false,
         requestHandler: staticRequestHandler,
     })

@@ -207,7 +207,7 @@ export async function loadStaticCache(options: { directory?: string; defaultHtml
             newCache.files[filePath.substr(filePath.indexOf('/'))] = cache.files[filePath]
         }
 
-        for (const filePath in newCache) {
+        for (const filePath in newCache.files) {
             if (filePath === options.defaultHtml) {
                 const defaultRecord: ICachedFile = newCache.files[filePath]
                 const headers: { [header: string]: string } = defaultRecord.headers
