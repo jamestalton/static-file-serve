@@ -8,9 +8,7 @@ import {
     Http2ServerResponse,
 } from 'http2'
 import { createServer as createHttpsServer } from 'https'
-import { Socket } from 'net'
-
-const logger = console
+import { logger } from './logger'
 
 let server: Http2Server | Server
 

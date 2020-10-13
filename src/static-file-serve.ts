@@ -8,8 +8,7 @@ import * as Negotiator from 'negotiator'
 import * as path from 'path'
 import { promisify } from 'util'
 import { brotliCompress, BrotliOptions, constants, deflate, gzip, InputType, ZlibOptions } from 'zlib'
-
-const logger = console
+import { logger } from './logger'
 
 const brCompress = promisify<InputType, BrotliOptions, Buffer>(brotliCompress)
 const {
@@ -238,7 +237,7 @@ export async function loadStaticCache(options: { directory?: string; defaultHtml
 
         staticCache = newCache
 
-        logger.debug({ msg: `static files cached`, count: Object.keys(cache.files).length })
+        logger.debug({ msg: `static files`, count: Object.keys(cache.files).length })
     })
 }
 

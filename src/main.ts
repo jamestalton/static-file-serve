@@ -1,10 +1,10 @@
 #!/usr/bin/env node # -*- TypeScript -*-
 /* istanbul ignore file */
+import { logger, setLogger } from './logger'
+setLogger(console)
+
 import { loadStaticCache, staticRequestHandler } from './static-file-serve'
 import { stopServer, startServer } from './server'
-
-const logger = console
-
 process.stdout.write('\n')
 logger.debug({ msg: `process start` })
 
