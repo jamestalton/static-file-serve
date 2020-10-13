@@ -41,31 +41,6 @@ export function startServer(options: ServerOptions): Promise<Http2Server | Serve
                 logger.debug({ msg: `server start`, type: 'http2', secure: false })
                 server = createHttp2Server(options.requestHandler)
             }
-            return new Promise((resolve, reject) => {
-                server
-                    .listen(process.env.PORT, () => {
-                        // server.listening
-                        const address = server.address()
-                        if (typeof address === 'string') {
-                            logger.debug({ msg: `server listening`, address })
-                        } else {
-                            logger.debug({ msg: `server listening`, port: address.port })
-                        }
-                        resolve(server)
-                    })
-                    .on('error', (err: NodeJS.ErrnoException) => {
-                        server.close()
-                        if (err.code === 'EADDRINUSE') {
-                            logger.error({
-                                msg: `server error`,
-                                error: 'address already in use',
-                                port: Number(process.env.PORT),
-                            })
-                        } else {
-                            logger.error({ msg: `server error`, error: err.message })
-                        }
-                    })
-            })
         } else {
             if (cert && key) {
                 logger.debug({ msg: `server start`, type: 'http', secure: true })
@@ -74,27 +49,33 @@ export function startServer(options: ServerOptions): Promise<Http2Server | Serve
                 logger.debug({ msg: `server start`, type: 'http', secure: false })
                 server = createHttpServer(options.requestHandler)
             }
-            return new Promise((resolve, reject) => {
-                ;(server as Server)
-                    .listen(process.env.PORT, () => {
-                        const address = server.address()
-                        if (typeof address === 'string') {
-                            logger.debug({ msg: `server listening`, address })
-                        } else {
-                            logger.debug({ msg: `server listening`, port: address.port })
-                        }
-                        resolve(server)
-                    })
-                    .on('error', (err: NodeJS.ErrnoException) => {
-                        server.close()
-                        if (err.code === 'EADDRINUSE') {
-                            logger.error({ msg: `server error`, error: err.message })
-                        } else {
-                            logger.error({ msg: `server error`, error: err.message })
-                        }
-                    })
-            })
         }
+        return new Promise((resolve, reject) => {
+            server
+                .listen(process.env.PORT, () => {
+                    // server.listening
+                    const address = server.address()
+                    if (typeof address === 'string') {
+                        logger.debug({ msg: `server listening`, address })
+                    } else {
+                        logger.debug({ msg: `server listening`, port: address.port })
+                    }
+
+                    resolve(server)
+                })
+                .on('error', (err: NodeJS.ErrnoException) => {
+                    server.close()
+                    if (err.code === 'EADDRINUSE') {
+                        logger.error({
+                            msg: `server error`,
+                            error: 'address already in use',
+                            port: Number(process.env.PORT),
+                        })
+                    } else {
+                        logger.error({ msg: `server error`, error: err.message })
+                    }
+                })
+        })
     } catch (err) {
         if (err instanceof Error) {
             logger.error({ msg: `server start error`, error: err.message, stack: err.stack })
@@ -123,7 +104,7 @@ export async function stopServer(): Promise<void> {
         await new Promise((resolve) =>
             server.close((err: Error) => {
                 if (err) {
-                    logger.error({ msg: 'server closed', error: err.message })
+                    logger.error({ msg: 'server close error', error: err.message })
                 } else {
                     logger.debug({ msg: 'server closed' })
                 }
