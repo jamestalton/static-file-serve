@@ -5,6 +5,8 @@ setLogger(console)
 
 import { loadStaticCache, staticRequestHandler } from './static-file-serve'
 import { stopServer, startServer } from './server'
+import { config } from './config'
+
 process.stdout.write('\n')
 logger.debug({ msg: `process start` })
 
@@ -32,11 +34,11 @@ process
 
 async function main() {
     await loadStaticCache({
-        defaultHtml: '/index.html',
-        directory: 'public',
+        defaultHtml: config.defaultHtml ? config.defaultHtml : '/index.html',
+        directory: config.directory ? config.directory : 'public',
     })
     await startServer({
-        http2: false,
+        http2: config.http2 === true,
         requestHandler: staticRequestHandler,
     })
 }
