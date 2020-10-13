@@ -1,3 +1,17 @@
 {
-    "http2": true
+    "http2": true,
+    "cacheControl": "public, max-age=31536000",
+    "defaultHeaders": {
+        "Cache-Control": "no-cache",
+        "Strict-Transport-Security": "max-age=31536000 ; includeSubDomains",
+        "X-Frame-Options": "deny",
+        "X-XSS-Protection": "1; mode=block",
+        "X-Content-Type-Options": "nosniff",
+        "Content-Security-Policy": "default-src 'self'",
+        "X-Permitted-Cross-Domain-Policies": "none",
+        "Referrer-Policy": "no-referrer",
+        "Feature-Policy": "vibrate 'none'; geolocation 'none'",
+        "X-DNS-Prefetch-Control": "off",
+        "Expect-CT": "enforce, max-age=30"
+    }
 }

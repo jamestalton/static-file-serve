@@ -1,4 +1,3 @@
-/* istanbul ignore file */
 import * as etag from 'etag'
 import { readdir, readFileSync, stat, Stats } from 'fs'
 import { IncomingMessage, ServerResponse } from 'http'
@@ -199,7 +198,11 @@ function parseDirectory(directory: string, cache: IStaticCache, baseDirectory = 
         })
 }
 
-export async function loadStaticCache(options: { directory?: string; defaultHtml?: string }): Promise<void> {
+export async function loadStaticCache(options: {
+    directory: string
+    defaultHtml: string
+    defaultHeaders: Record<string, string>
+}): Promise<void> {
     const newCache: IStaticCache = { defaultHtml: options.defaultHtml, files: {} }
     await parseDirectory(options.directory, { files: {} }).then((cache) => {
         for (const filePath in cache.files) {
@@ -210,29 +213,12 @@ export async function loadStaticCache(options: { directory?: string; defaultHtml
             if (filePath === options.defaultHtml) {
                 const defaultRecord: ICachedFile = newCache.files[filePath]
                 const headers: { [header: string]: string } = defaultRecord.headers
-                headers['Cache-Control'] = `no-cache`
-                headers['Strict-Transport-Security'] = 'max-age=31536000 ; includeSubDomains'
-                headers['X-Frame-Options'] = 'deny'
-                headers['X-XSS-Protection'] = '1; mode=block'
-                headers['X-Content-Type-Options'] = 'nosniff'
-                headers['Content-Security-Policy'] = "default-src 'self'"
-                headers['X-Permitted-Cross-Domain-Policies'] = 'none'
-                headers['Referrer-Policy'] = 'no-referrer'
-                headers['Feature-Policy'] = "vibrate 'none'; geolocation 'none'"
-                headers['X-DNS-Prefetch-Control'] = 'off'
-                headers['Expect-CT'] = 'enforce, max-age=30'
+                if (options.defaultHeaders) {
+                    for (const header in options.defaultHeaders) {
+                        headers[header] = options.defaultHeaders[header]
+                    }
+                }
             }
-            //  else if (filePath.startsWith('/assets/')) {
-            //     newCache.files[filePath].headers[
-            //         'Cache-Control'
-            //     ] = `public, max-age=86400, stale-while-revalidate=120, stale-if-error=120` // 24 hours
-            // } else if (filePath === '/favicon.ico') {
-            //     newCache.files[filePath].headers[
-            //         'Cache-Control'
-            //     ] = `public, max-age=86400, stale-while-revalidate=120, stale-if-error=120` // 24 hours
-            // } else if (filePath.startsWith('/ngsw')) {
-            //     newCache.files[filePath].headers['Cache-Control'] = `no-cache, no-store, must-revalidate`
-            // }
         }
 
         staticCache = newCache

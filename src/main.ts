@@ -36,6 +36,7 @@ async function main() {
     await loadStaticCache({
         defaultHtml: config.defaultHtml ? config.defaultHtml : '/index.html',
         directory: config.directory ? config.directory : 'public',
+        defaultHeaders: config.defaultHeaders ? config.defaultHeaders : { ['Cache-Control']: 'no-cache' },
     })
     await startServer({
         http2: config.http2 === true,

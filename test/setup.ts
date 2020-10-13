@@ -24,6 +24,9 @@ export async function setupBeforeAll(): Promise<void> {
     await loadStaticCache({
         defaultHtml: '/index.html',
         directory: 'public',
+        defaultHeaders: {
+            ['Cache-Control']: 'no-cache',
+        },
     })
 
     const server: Http2Server | Server = await startServer({

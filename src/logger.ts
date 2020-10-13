@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 export interface ILogger {
     info(message: Record<string, unknown>): void
     debug(message: Record<string, unknown>): void
@@ -14,6 +16,7 @@ export let logger: ILogger = {
     error: noop,
 }
 
+/* istanbul ignore next */
 export function setLogger(newLogger: ILogger): void {
     logger = newLogger
 }

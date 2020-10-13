@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import { readFileSync } from 'fs'
 import { createServer as createHttpServer, IncomingMessage, Server, ServerResponse } from 'http'
 import {
