@@ -4,16 +4,14 @@ export interface ILogger {
     error(message: Record<string, unknown>): void
 }
 
+function noop(): void {
+    // Do Nothing
+}
+
 export let logger: ILogger = {
-    info: () => {
-        /**/
-    },
-    debug: () => {
-        /**/
-    },
-    error: () => {
-        /**/
-    },
+    info: noop,
+    debug: noop,
+    error: noop,
 }
 
 export function setLogger(newLogger: ILogger): void {
