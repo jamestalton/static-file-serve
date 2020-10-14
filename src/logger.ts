@@ -1,9 +1,15 @@
 /* istanbul ignore file */
 
+interface ILogMessage {
+    msg: string
+    [key: string]: unknown
+}
+
 export interface ILogger {
-    info(message: Record<string, unknown>): void
-    debug(message: Record<string, unknown>): void
-    error(message: Record<string, unknown>): void
+    info(message: ILogMessage): void
+    warn(message: ILogMessage): void
+    debug(message: ILogMessage): void
+    error(message: ILogMessage): void
 }
 
 function noop(): void {
@@ -12,6 +18,7 @@ function noop(): void {
 
 export let logger: ILogger = {
     info: noop,
+    warn: noop,
     debug: noop,
     error: noop,
 }

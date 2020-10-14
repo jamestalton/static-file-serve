@@ -17,7 +17,7 @@
         "lib"
     ],
     "scripts": {
-        "start": "NODE_ENV=development PORT=3000 ts-node-dev --no-notify --no-deps --respawn --transpile-only src/main.ts",
+        "start": "PORT=3000 NODE_ENV=development LOG_LEVEL=trace ts-node-dev --no-notify --no-deps --respawn --transpile-only src/main.ts | pino-zen --ignore instance,time",
         "build": "rm -rf lib && tsc",
         "test": "jest --verbose --color --ci",
         "lint": "eslint src test --ext .ts --max-warnings=0",
@@ -27,14 +27,16 @@
         "update": "rm -rf package-lock.json node_modules && npx npm-check-updates -u && npm install && npm audit fix && npm test && npm run lint && npm run check",
         "generate-certs": "mkdir -p certs && openssl req -subj '/C=US' -new -newkey rsa:2048 -sha256 -days 365 -nodes -x509 -keyout certs/tls.key -out certs/tls.crt",
         "docker:build": "docker build --pull --tag static-file-serve .",
-        "docker:run": "docker run --rm --name static-file-serve -p 3000:3000 -e PORT=3000 static-file-serve"
+        "docker:run": "docker run --rm --name static-file-serve -v $PWD/public:/app/public -v $PWD/config.json:/app/config.json -p 3000:3000 -e PORT=3000 static-file-serve"
     },
     "dependencies": {
         "etag": "^1.8.1",
         "mime-types": "^2.1.27",
-        "negotiator": "^0.6.2"
+        "negotiator": "^0.6.2",
+        "pino": "^6.7.0"
     },
     "devDependencies": {
+        "@types/pino": "^6.3.2",
         "@types/etag": "^1.8.0",
         "@types/jest": "^26.x.x",
         "@types/mime-types": "^2.1.0",
@@ -49,6 +51,7 @@
         "eslint-plugin-prettier": "^3.1.4",
         "jest": "^26.x.x",
         "nock": "^13.0.4",
+        "pino-zen": "^1.0.19",
         "prettier": "^2.1.2",
         "ts-jest": "^26.x.x",
         "ts-node": "^9.0.0",

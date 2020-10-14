@@ -15,4 +15,5 @@ ENV NODE_ENV production
 WORKDIR /app
 COPY --from=builder /app/node_modules /app/node_modules
 COPY --from=builder /app/lib /app/
+COPY config.json /app/config.json
 CMD ["node", "main.js"]

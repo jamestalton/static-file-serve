@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 
 import { readFileSync } from 'fs'
-import { createServer as createHttpServer, IncomingMessage, Server, ServerResponse } from 'http'
+import { createServer as createHttpServer, IncomingMessage, request, Server, ServerResponse, STATUS_CODES } from 'http'
 import {
     createSecureServer,
     createServer as createHttp2Server,
@@ -10,9 +10,19 @@ import {
     Http2ServerResponse,
 } from 'http2'
 import { createServer as createHttpsServer } from 'https'
+import { Socket } from 'net'
+import { TLSSocket } from 'tls'
 import { logger } from './logger'
 
 let server: Http2Server | Server
+
+interface ISocketRequests {
+    socketID: number
+    activeRequests: number
+}
+
+let nextSocketID = 0
+const sockets: { [id: string]: Socket | TLSSocket } = {}
 
 export type ServerOptions =
     | {
@@ -65,6 +75,51 @@ export function startServer(options: ServerOptions): Promise<Http2Server | Serve
 
                     resolve(server)
                 })
+                .on('connection', (socket) => {
+                    let socketID = nextSocketID++
+                    while (sockets[socketID] !== undefined) {
+                        socketID = nextSocketID++
+                    }
+                    sockets[socketID] = socket
+                    ;((socket as unknown) as ISocketRequests).socketID = socketID
+                    ;((socket as unknown) as ISocketRequests).activeRequests = 0
+                    socket.on('close', () => {
+                        const socketID = ((socket as unknown) as ISocketRequests).socketID
+                        if (socketID < nextSocketID) nextSocketID = socketID
+                        sockets[socketID] = undefined
+                    })
+                })
+                .on('request', (req, res) => {
+                    const start = process.hrtime()
+                    const socket = (req.socket as unknown) as ISocketRequests
+                    socket.activeRequests++
+                    req.on('close', () => {
+                        socket.activeRequests--
+                        if (isShuttingDown) {
+                            req.socket.destroy()
+                        }
+
+                        const msg = {
+                            msg: STATUS_CODES[res.statusCode],
+                            status: res.statusCode,
+                            method: req.method,
+                            url: req.url,
+                            ms: 0,
+                        }
+
+                        const diff = process.hrtime(start)
+                        const time = Math.round((diff[0] * 1e9 + diff[1]) / 10000) / 100
+                        msg.ms = time
+
+                        if (res.statusCode < 400) {
+                            logger.info(msg)
+                        } else if (res.statusCode < 500) {
+                            logger.warn(msg)
+                        } else {
+                            logger.error(msg)
+                        }
+                    })
+                })
                 .on('error', (err: NodeJS.ErrnoException) => {
                     server.close()
                     if (err.code === 'EADDRINUSE') {
@@ -97,8 +152,20 @@ export async function stopServer(): Promise<void> {
     logger.debug({ msg: 'shutting down' })
 
     if (process.env.NODE_ENV === 'development') {
-        // eslint-disable-next-line no-process-exit
-        process.exit(0)
+        setTimeout(function () {
+            logger.error({ msg: 'shutdown timeout' })
+            // eslint-disable-next-line no-process-exit
+            process.exit(1)
+        }, 5 * 1000).unref()
+    }
+
+    for (const socketID of Object.keys(sockets)) {
+        const socket = sockets[socketID]
+        if (socket !== undefined) {
+            if (((socket as unknown) as ISocketRequests).activeRequests === 0) {
+                socket.destroy()
+            }
+        }
     }
 
     if (server) {
