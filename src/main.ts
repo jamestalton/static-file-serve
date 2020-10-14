@@ -1,7 +1,7 @@
 #!/usr/bin/env node # -*- TypeScript -*-
 /* istanbul ignore file */
 import { logger, setLogger } from './logger'
-import { pinoLogger } from './pino-logger'
+import { pinoLogger, stopLogger } from './pino-logger'
 setLogger(pinoLogger)
 
 import { loadStaticCache, staticRequestHandler } from './static-file-serve'
@@ -11,29 +11,7 @@ import { config } from './config'
 process.stdout.write('\n')
 logger.debug({ msg: `process start` })
 
-process
-    .on('SIGINT', (signal) => {
-        process.stdout.write('\n')
-        logger.debug({ msg: `process ${signal}` })
-        void stopServer()
-    })
-    .on('SIGTERM', (signal) => {
-        logger.debug({ msg: `process ${signal}` })
-        void stopServer()
-    })
-    .on('uncaughtException', (err) => {
-        logger.error({ msg: 'process uncaughtException', error: err.message, stack: err.stack })
-        void stopServer()
-    })
-    .on('exit', function processExit(code) {
-        if (code !== 0) {
-            logger.error({ msg: `process exit`, code })
-        } else {
-            logger.debug({ msg: `process exit` })
-        }
-    })
-
-async function main() {
+async function start() {
     await loadStaticCache({
         defaultHtml: config.defaultHtml ? config.defaultHtml : '/index.html',
         directory: config.directory ? config.directory : 'public',
@@ -44,4 +22,32 @@ async function main() {
         requestHandler: staticRequestHandler,
     })
 }
-void main()
+
+async function stop() {
+    await stopServer()
+    stopLogger()
+}
+
+process
+    .on('SIGINT', (signal) => {
+        process.stdout.write('\n')
+        logger.debug({ msg: `process ${signal}` })
+        void stop()
+    })
+    .on('SIGTERM', (signal) => {
+        logger.debug({ msg: `process ${signal}` })
+        void stop()
+    })
+    .on('uncaughtException', (err) => {
+        logger.error({ msg: 'process uncaughtException', error: err.message, stack: err.stack })
+        void stop()
+    })
+    .on('exit', function processExit(code) {
+        if (code !== 0) {
+            logger.error({ msg: `process exit`, code })
+        } else {
+            logger.debug({ msg: `process exit` })
+        }
+    })
+
+void start()
